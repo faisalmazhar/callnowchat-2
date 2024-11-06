@@ -22,10 +22,10 @@ loadRingbaScript();
 // Global object to store all selected values
 window.formData = {
   citizenship: "",
-  zipCode: "",
+  zipcode: "",
   age: "",
-  insuranceStatus: "",
-  insuranceCompany: "",
+  is_insured: "",
+  insurance_company: "",
 };
 
 // Function to update the URL with all selected values
@@ -37,11 +37,8 @@ function updateUrlWithAllValues() {
 
   // Add all non-empty values to URL
   Object.entries(window.formData).forEach(([key, value]) => {
-    // Replace "No" with "unknown" for insuranceStatus
-    const urlValue =
-      key === "insuranceStatus" && value === "No" ? "unknown" : value;
-    if (urlValue) {
-      url.searchParams.set(key, urlValue);
+    if (value) {
+      url.searchParams.set(key, value);
     }
   });
 
@@ -54,6 +51,24 @@ function updateUrlWithAllValues() {
 
 // Function to update a specific form value
 function updateFormValue(key, value) {
+  if (key === "insuranceStatus") {
+    key = "is_insured";
+    if (value === "Yes") {
+      value = "OTHER";
+    } else if (value === "No") {
+      value = "UNKNOWN";
+    }
+  } else if (key === "insuranceCompany") {
+    key = "insurance_company"; // Add this line to change the key
+  } else if (key === "zipCode") {
+    key = "zipcode"; // Add this line to change the key
+  } else if (key === "citizenship") {
+    if (value === "Yes") {
+      value = "yes"; // Convert Yes to lowercase yes
+    } else if (value === "No") {
+      value = "no"; // Convert No to lowercase no
+    }
+  }
   window.formData[key] = value;
 }
 
@@ -127,7 +142,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("countrySelect")?.addEventListener("change", () => {
     const insuranceCompany = document.getElementById("countrySelect").value;
     if (insuranceCompany) {
-      updateFormValue("insuranceCompany", insuranceCompany);
+      updateFormValue("insurance_company", insuranceCompany);
 
       // Now update the URL with all collected data
       updateUrlWithAllValues();
@@ -544,25 +559,25 @@ var triggerOfferwall = function () {
 
 // Values show in URL and insurance selected field funcationalty
 
-// Insurance status buttons (including "No" button)
-document.querySelectorAll(".finishquiz").forEach((button) => {
-  button.addEventListener("click", () => {
-    const response = button.getAttribute("data-form-value");
-    updateFormValue("insuranceStatus", response);
+// // Insurance status buttons (including "No" button)
+// document.querySelectorAll(".finishquiz").forEach((button) => {
+//   button.addEventListener("click", () => {
+//     const response = button.getAttribute("data-form-value");
+//     updateFormValue("insuranceStatus", response);
 
-    // Update button states
-    document.querySelectorAll(".finishquiz").forEach((btn) => {
-      btn.setAttribute("data-selected", "false");
-    });
-    button.setAttribute("data-selected", "true");
+//     // Update button states
+//     document.querySelectorAll(".finishquiz").forEach((btn) => {
+//       btn.setAttribute("data-selected", "false");
+//     });
+//     button.setAttribute("data-selected", "true");
 
-    // If "No" is clicked, update URL and show values
-    if (response === "No") {
-      updateUrlWithAllValues();
-      showCongratulationsMessage();
-    }
-  });
-});
+//     // If "No" is clicked, update URL and show values
+//     if (response === "No") {
+//       updateUrlWithAllValues();
+//       showCongratulationsMessage();
+//     }
+//   });
+// });
 
 // Insurance company selection
 document.getElementById("countrySelect")?.addEventListener("change", () => {
