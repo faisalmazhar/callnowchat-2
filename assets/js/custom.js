@@ -1,3 +1,148 @@
+// Global object to store all selected values
+window.formData = {
+  citizenship: "",
+  zipcode: "",
+  age: "",
+  is_insured: "",
+  insurance_company: "",
+};
+
+// Add these functions at the top of your file
+function scrollToBottom() {
+  const chatBody = document.querySelector(".chatBody");
+  if (chatBody) {
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+}
+
+function showTypingIndicator() {
+  const typingIndicator = document.createElement("div");
+  typingIndicator.id = "typingIndicator";
+  typingIndicator.className = "typing-indicator";
+  typingIndicator.innerHTML = "<span></span><span></span><span></span>";
+  document.querySelector(".chatBody").appendChild(typingIndicator);
+  scrollToBottom();
+}
+
+function hideTypingIndicator() {
+  const typingIndicator = document.getElementById("typingIndicator");
+  if (typingIndicator) {
+    typingIndicator.remove();
+  }
+}
+
+// First, add the function definition at the top of your custom.js
+function showInsuranceCompanyQuestion() {
+  const msgCountry = document.getElementById("msgCountry");
+  const countrySelectContainer = document.getElementById(
+    "countrySelectContainer"
+  );
+
+  // Show the question div
+  msgCountry.classList.remove("hidden");
+
+  // Apply typing effect
+  let text = "Select Your Insurance Company";
+  let index = 0;
+
+  function typeText() {
+    if (index < text.length) {
+      msgCountry.querySelector(".agent-question-text").textContent +=
+        text.charAt(index);
+      index++;
+      setTimeout(typeText, 50); // Adjust typing speed here
+    } else {
+      // Typing effect complete, show the select options after a short delay
+      setTimeout(() => {
+        countrySelectContainer.classList.remove("hidden");
+      }, 500); // Adjust delay as needed
+    }
+  }
+
+  // Start typing effect
+  msgCountry.querySelector(".agent-question-text").textContent = "";
+  typeText();
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  let citizenshipValue = "";
+  let zipcodeValue = "";
+  let ageValue = "";
+
+  // Handle citizenship buttons
+  const citizenshipButtons = document.querySelectorAll(
+    'button[data-form-step="citizenship"]'
+  );
+
+  citizenshipButtons.forEach((button) => {
+    button.addEventListener("click", function () {
+      citizenshipButtons.forEach((btn) => btn.classList.remove("selected"));
+      this.classList.add("selected");
+      citizenshipValue = this.getAttribute("data-form-value").toLowerCase();
+    });
+  });
+
+  // Handle zipcode input
+  const zipcodeInput = document.getElementById("zipCodeInput");
+  if (zipcodeInput) {
+    zipcodeInput.addEventListener("change", function () {
+      zipcodeValue = this.value;
+    });
+  }
+
+  // Handle age input
+  const ageInput = document.getElementById("ageInput");
+  if (ageInput) {
+    ageInput.addEventListener("change", function () {
+      ageValue = this.value;
+    });
+  }
+
+  // Handle insurance question buttons
+  const insuranceYesButton = document.querySelector(
+    'button[data-form-step="3"][data-form-value="Yes"]'
+  );
+  const insuranceNoButton = document.querySelector(
+    'button[data-form-step="3"][data-form-value="No"]'
+  );
+
+  if (insuranceYesButton) {
+    insuranceYesButton.addEventListener("click", function () {
+      // Do nothing when "Yes" is clicked
+    });
+  }
+
+  if (insuranceNoButton) {
+    insuranceNoButton.addEventListener("click", function () {
+      updateFullURL("UNKNOWN");
+    });
+  }
+
+  function updateFullURL(insuranceStatus) {
+    let currentUrl = new URL(window.location.href);
+
+    // Clear all parameters
+    for (let param of currentUrl.searchParams.keys()) {
+      currentUrl.searchParams.delete(param);
+    }
+
+    // Add parameters in desired order
+    if (citizenshipValue) {
+      currentUrl.searchParams.set("citizenship", citizenshipValue);
+    }
+    if (zipcodeValue) {
+      currentUrl.searchParams.set("zipcode", zipcodeValue);
+    }
+    if (ageValue) {
+      currentUrl.searchParams.set("age", ageValue);
+    }
+    currentUrl.searchParams.set("is_insured", insuranceStatus);
+
+    window.history.pushState({}, "", currentUrl);
+    console.log("Updated full URL:", currentUrl.toString());
+  }
+});
+
 // Function to load the Ringba script and update the phone number
 function loadRingbaScript() {
   console.log("Attempting to load Ringba script...");
@@ -18,15 +163,6 @@ function loadRingbaScript() {
 
 // Call the function to load Ringba
 loadRingbaScript();
-
-// Global object to store all selected values
-window.formData = {
-  citizenship: "",
-  zipcode: "",
-  age: "",
-  is_insured: "",
-  insurance_company: "",
-};
 
 // Function to update the URL with all selected values
 function updateUrlWithAllValues() {
@@ -53,23 +189,37 @@ function updateUrlWithAllValues() {
 function updateFormValue(key, value) {
   if (key === "insuranceStatus") {
     key = "is_insured";
+    // When insurance status is "Yes", set value to "OTHER"
     if (value === "Yes") {
       value = "OTHER";
     } else if (value === "No") {
       value = "UNKNOWN";
     }
   } else if (key === "insuranceCompany") {
-    key = "insurance_company"; // Add this line to change the key
+    key = "insurance_company";
+    // Make sure the insurance company value is preserved
+    value = value.toUpperCase();
   } else if (key === "zipCode") {
-    key = "zipcode"; // Add this line to change the key
+    key = "zipcode";
   } else if (key === "citizenship") {
     if (value === "Yes") {
-      value = "yes"; // Convert Yes to lowercase yes
+      value = "yes";
     } else if (value === "No") {
-      value = "no"; // Convert No to lowercase no
+      value = "no";
     }
   }
+
+  // Make sure window.formData exists
+  if (!window.formData) {
+    window.formData = {};
+  }
+
+  // Update the form data
   window.formData[key] = value;
+
+  // For debugging
+  console.log(`Updated ${key} with value: ${value}`);
+  console.log("Current formData:", window.formData);
 }
 
 // Function to simulate typing effect for the message
@@ -118,25 +268,52 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Insurance status buttons (including "No" button)
-  document.querySelectorAll(".finishquiz").forEach((button) => {
-    button.addEventListener("click", () => {
-      const response = button.getAttribute("data-form-value");
-      updateFormValue("insuranceStatus", response);
+  // Your existing finishquiz code with modifications
+  $(document).on("click", ".finishquiz", function () {
+    let step = $(this).data("form-step");
+    let answer = $(this).data("answer");
 
-      // Update button states
-      document.querySelectorAll(".finishquiz").forEach((btn) => {
-        btn.setAttribute("data-selected", "false");
-      });
-      button.setAttribute("data-selected", "true");
+    if (step === "3") {
+      if (answer === "Yes") {
+        // ... other code ...
 
-      // If "No" is clicked, update URL and show values
-      if (response === "No") {
-        updateUrlWithAllValues();
-        showCongratulationsMessage();
+        // Get current URL and parameters
+        let currentUrl = window.modifiedUrl || window.location.href;
+        let url = new URL(currentUrl);
+
+        // Add or update the 'is_insured' parameter
+        url.searchParams.set("is_insured", "OTHER");
+
+        // Update the window's modified URL
+        window.modifiedUrl = url.toString();
+
+        // Update visible URL
+        window.history.pushState({}, "", window.modifiedUrl);
+
+        // ... other code ...
+      } else if (answer === "No") {
+        // ... existing code for "No" ...
+        url.searchParams.set("is_insured", "UNKNOWN");
+        // ... rest of the code ...
       }
-    });
+    }
   });
+
+  // Function to update the 'insured' parameter while preserving other parameters
+  function updateInsuredParameter(value) {
+    var currentUrl = new URL(window.location.href);
+    var searchParams = currentUrl.searchParams;
+
+    // Update or add the 'insured' parameter
+    searchParams.set("is_insured", value);
+
+    // Construct the new URL with updated parameters
+    var newUrl =
+      currentUrl.origin + currentUrl.pathname + "?" + searchParams.toString();
+
+    // Update the URL without reloading the page
+    window.history.pushState({ path: newUrl }, "", newUrl);
+  }
 
   // Insurance company selection
   document.getElementById("countrySelect")?.addEventListener("change", () => {
@@ -407,41 +584,67 @@ $(document).ready(function () {
 
       // Step for insurance question
       if (currentStep == 3) {
-        $("#agentBlock4 .agent-chat").prepend(typingEffect());
         $("#msg11").addClass("hidden");
         $("#userBlock3").removeClass("hidden");
 
         if (buttonValue == "No") {
           $("#msg12no").removeClass("hidden");
+          formData.is_insured = "UNKNOWN";
+          updateURLParameters(); // Update URL parameters
+          $(".temp-typing").remove();
           setTimeout(scrollToBottom, 0);
 
-          // Skip country selection and proceed to congratulations
           setTimeout(function () {
             displayCongratulationsMessages();
           }, 750);
         } else if (buttonValue == "Yes") {
           $("#msg12yes").removeClass("hidden");
+          formData.is_insured = "OTHER"; // Set default insurance value to "OTHER"
+          updateURLParameters(); // Update URL parameters
           setTimeout(scrollToBottom, 0);
 
-          // Show country selection if "Yes" with typing effect
+          // Show country selection if "Yes"
           setTimeout(function () {
             $("#agentBlockCountry").removeClass("hidden");
-            $("#agentBlockCountry .agent-chat").prepend(typingEffect());
+            $("#msgCountry").removeClass("hidden");
+            $("#countrySelectContainer").removeClass("hidden");
             setTimeout(scrollToBottom, 0);
+          }, 750);
 
-            setTimeout(function () {
-              $(".temp-typing").remove();
-              $("#msgCountry").removeClass("hidden").after(typingEffect());
+          // Add event listener for country selection
+          $("#countrySelect").on("change", function () {
+            let selectedCountry = $(this).val();
+            if (selectedCountry) {
+              $("#userBlockCountry").removeClass("hidden");
+              $("#msgUserCountry").removeClass("hidden").text(selectedCountry);
               setTimeout(scrollToBottom, 0);
 
               setTimeout(function () {
-                $(".temp-typing").remove();
-                $("#countrySelectContainer").removeClass("hidden");
-                setTimeout(scrollToBottom, 0);
+                displayCongratulationsMessages();
               }, 750);
-            }, 1500);
-          }, 2250);
+            }
+          });
         }
+      }
+
+      // Function to update URL parameters
+      function updateURLParameters() {
+        let currentUrl = new URL(window.location.href);
+        let params = new URLSearchParams(currentUrl.search);
+
+        // Update all form data parameters
+        for (let key in formData) {
+          if (formData[key]) {
+            params.set(key, formData[key]);
+          }
+        }
+
+        // Update URL without refreshing the page
+        window.history.replaceState(
+          {},
+          "",
+          `${currentUrl.pathname}?${params.toString()}`
+        );
       }
 
       // Step for country selection
@@ -465,45 +668,25 @@ $(document).ready(function () {
       // Function to display congratulations messages
       function displayCongratulationsMessages() {
         $("#agentBlock4").removeClass("hidden");
+        $(".temp-typing").remove(); // Remove any existing typing effects
         setTimeout(scrollToBottom, 0);
-        setTimeout(function () {
-          $(".temp-typing").remove();
-          $("#msg13").removeClass("hidden").after(typingEffect());
-          setTimeout(scrollToBottom, 0);
-          setTimeout(function () {
-            $(".temp-typing").remove();
-            $("#msg14").removeClass("hidden").after(typingEffect());
-            setTimeout(scrollToBottom, 0);
-            setTimeout(function () {
-              $(".temp-typing").remove();
-              $("#msg16").removeClass("hidden").after(typingEffect());
-              setTimeout(scrollToBottom, 0);
-              setTimeout(function () {
-                $(".temp-typing").remove();
-                $("#msg17").removeClass("hidden");
-                $("#msg17a").removeClass("hidden");
-                setTimeout(scrollToBottom, 0);
-              }, 0);
-            }, 2250);
-          }, 1750);
-        }, 1250);
+
+        $("#msg13").removeClass("hidden");
+        $("#msg14").removeClass("hidden");
+        $("#msg16").removeClass("hidden");
+        $("#msg17").removeClass("hidden");
+        $("#msg17a").removeClass("hidden");
+        setTimeout(scrollToBottom, 0);
       }
     }
   );
-
-  function scrollToBottom() {
-    const chatBody = document.querySelector(".chatBody");
-    if (chatBody) {
-      chatBody.scrollTop = chatBody.scrollHeight;
-    }
-  }
 });
 
 function typingEffect(cssClass) {
   string =
     '<div class="temp-typing bg-gray-200 p-3 rounded-lg shadow-xs mt-2 inline-block">';
   string += '<div class="typing-animation">';
-  string += '<div class="typing-dot"></div>';
+  string += '<div class=" "></div>';
   string += '<div class="typing-dot"></div>';
   string += '<div class="typing-dot"></div>';
   string += "</div>";
@@ -556,28 +739,6 @@ var triggerOfferwall = function () {
     window.open("https://dwizr.com/?a=7669&c=3792&p=r&s1", "_blank");
   }, 10000);
 };
-
-// Values show in URL and insurance selected field funcationalty
-
-// // Insurance status buttons (including "No" button)
-// document.querySelectorAll(".finishquiz").forEach((button) => {
-//   button.addEventListener("click", () => {
-//     const response = button.getAttribute("data-form-value");
-//     updateFormValue("insuranceStatus", response);
-
-//     // Update button states
-//     document.querySelectorAll(".finishquiz").forEach((btn) => {
-//       btn.setAttribute("data-selected", "false");
-//     });
-//     button.setAttribute("data-selected", "true");
-
-//     // If "No" is clicked, update URL and show values
-//     if (response === "No") {
-//       updateUrlWithAllValues();
-//       showCongratulationsMessage();
-//     }
-//   });
-// });
 
 // Insurance company selection
 document.getElementById("countrySelect")?.addEventListener("change", () => {
@@ -634,3 +795,28 @@ function showCongratulationsMessage() {
   document.getElementById("agentBlock4")?.classList.remove("hidden");
   document.getElementById("countrySelectContainer")?.classList.add("hidden");
 }
+
+// Add this for the country select field
+document
+  .getElementById("countrySelect")
+  .addEventListener("change", function () {
+    const selectedValue = this.value;
+    if (selectedValue) {
+      // Show user response
+      document.getElementById("userBlockCountry").classList.remove("hidden");
+      document.getElementById("msgUserCountry").classList.remove("hidden");
+      document.getElementById("msgUserCountry").textContent = selectedValue;
+      scrollToBottom();
+
+      // Show typing indicator
+      showTypingIndicator();
+
+      // Show the congratulations message without delay
+      setTimeout(() => {
+        hideTypingIndicator();
+        document.getElementById("agentBlock4").classList.remove("hidden");
+        document.getElementById("msg13").classList.remove("hidden");
+        scrollToBottom(); // Scroll immediately when the message appears
+      }, 1500);
+    }
+  });
