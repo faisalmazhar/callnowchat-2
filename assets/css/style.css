@@ -1231,15 +1231,10 @@ input {
 #ageInput,
 #countrySelect {
   padding: 10px 20px;
-  margin-bottom: 10px;
   width: 100%;
+  height: 40px;
 }
-/* #zipCodeInputContainer button {
-  padding: 10px 20px !important;
-}
-#countrySelectContainer button {
-  padding: 10px 20px !important;
-} */
+
 button {
   margin-top: 10px;
   padding: 10px 20px;
@@ -1443,23 +1438,17 @@ button {
 }
 
 .success-msg {
-  color: #077900;
-  font-size: 24px;
-  font-weight: bold;
-  text-transform: uppercase;
+  color: #000;
+  font-size: 16px;
 }
 
 #msg13 {
-  text-align: center;
+  text-align: left;
+  width: 117%;
 }
-
-/* #userBlockCountry,
-#userBlock3,
-#userBlockage,
-#userBlockZipCode,
-#userBlockCitizenship {
-  max-width: 392px;
-} */
+div#msg14 {
+  width: 175%;
+}
 
 @media (min-width: 640px) {
   .sm\:text-3xl {
@@ -1917,9 +1906,9 @@ body {
   padding-bottom: 25px; */
   width: 100%;
 }
-/* .agent-chat {
-  width: 85%;
-} */
+.mt-2 {
+  margin-top: 10px !important;
+}
 .question-button button {
   background-color: #347a6f;
   border: none;
@@ -1938,7 +1927,6 @@ body {
   font-weight: 700;
   line-height: 0;
   min-height: 20px;
-  margin-top: 10px;
 }
 .hidden {
   display: none !important;
@@ -1962,10 +1950,14 @@ body {
   font-weight: 700;
   line-height: 0;
   min-height: 20px;
-  margin-top: 10px;
+}
+a#redirectButton {
+  width: 100%;
+  max-width: 65%;
+  margin-left: 0;
 }
 #msg4 {
-  width: 50%;
+  /* width: 50%; */
   background: #e5e5ea;
   text-align: left;
   box-shadow: 0 1px 3px #0000004a;
@@ -1974,6 +1966,14 @@ body {
   margin-bottom: 10px;
   border-radius: 8px;
   box-shadow: 0 1px 3px #0000004a;
+}
+.agent-chat {
+  width: 100%;
+  max-width: 40%;
+}
+div#countrySelectContainer {
+  width: 91%;
+  margin-bottom: 0;
 }
 .user-tab {
   display: flex;
@@ -2003,4 +2003,18 @@ body {
   padding: 10px;
   border-radius: 10px;
   margin-right: 10px;
+}
+
+@media (max-width: 767px) {
+  .agent-chat {
+    width: 100%;
+    max-width: 65%;
+  }
+  div#msg14 {
+    width: 117%;
+  }
+  a#redirectButton {
+    max-width: 100%;
+    font-size: 20px;
+  }
 }

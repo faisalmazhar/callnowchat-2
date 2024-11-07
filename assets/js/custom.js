@@ -268,52 +268,25 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Your existing finishquiz code with modifications
-  $(document).on("click", ".finishquiz", function () {
-    let step = $(this).data("form-step");
-    let answer = $(this).data("answer");
+  // Insurance status buttons (including "No" button)
+  document.querySelectorAll(".finishquiz").forEach((button) => {
+    button.addEventListener("click", () => {
+      const response = button.getAttribute("data-form-value");
+      updateFormValue("insuranceStatus", response);
 
-    if (step === "3") {
-      if (answer === "Yes") {
-        // ... other code ...
+      // Update button states
+      document.querySelectorAll(".finishquiz").forEach((btn) => {
+        btn.setAttribute("data-selected", "false");
+      });
+      button.setAttribute("data-selected", "true");
 
-        // Get current URL and parameters
-        let currentUrl = window.modifiedUrl || window.location.href;
-        let url = new URL(currentUrl);
-
-        // Add or update the 'is_insured' parameter
-        url.searchParams.set("is_insured", "OTHER");
-
-        // Update the window's modified URL
-        window.modifiedUrl = url.toString();
-
-        // Update visible URL
-        window.history.pushState({}, "", window.modifiedUrl);
-
-        // ... other code ...
-      } else if (answer === "No") {
-        // ... existing code for "No" ...
-        url.searchParams.set("is_insured", "UNKNOWN");
-        // ... rest of the code ...
+      // If "No" is clicked, update URL and show values
+      if (response === "No") {
+        updateUrlWithAllValues();
+        showCongratulationsMessage();
       }
-    }
+    });
   });
-
-  // Function to update the 'insured' parameter while preserving other parameters
-  function updateInsuredParameter(value) {
-    var currentUrl = new URL(window.location.href);
-    var searchParams = currentUrl.searchParams;
-
-    // Update or add the 'insured' parameter
-    searchParams.set("is_insured", value);
-
-    // Construct the new URL with updated parameters
-    var newUrl =
-      currentUrl.origin + currentUrl.pathname + "?" + searchParams.toString();
-
-    // Update the URL without reloading the page
-    window.history.pushState({ path: newUrl }, "", newUrl);
-  }
 
   // Insurance company selection
   document.getElementById("countrySelect")?.addEventListener("change", () => {
@@ -531,57 +504,6 @@ $(document).ready(function () {
         }, 1250);
       }
 
-      // Step for age range question
-      if (currentStep == 2) {
-        $("#agentBlock2").removeClass("hidden");
-        if (!$("#msg7").is(":visible")) {
-          // Check if the typing effect has already been shown
-          $("#agentBlock2 .agent-chat").prepend(typingEffect());
-          setTimeout(scrollToBottom, 0);
-
-          setTimeout(function () {
-            $(".temp-typing").remove();
-            $("#msg7").removeClass("hidden").after(typingEffect());
-            setTimeout(scrollToBottom, 0);
-
-            setTimeout(function () {
-              $(".temp-typing").remove();
-              $("#msg8").removeClass("hidden");
-              setTimeout(scrollToBottom, 0);
-            }, 750);
-          }, 1500);
-        }
-      }
-
-      // User response for age range
-      if (currentStep == 2) {
-        $("#userBlock2").removeClass("hidden");
-        $("#msg9" + buttonValue.toLowerCase())
-          .removeClass("hidden")
-          .text(buttonValue);
-        setTimeout(scrollToBottom, 0);
-
-        // Proceed to next step (insurance question)
-        setTimeout(function () {
-          currentStep = 3;
-          $("#agentBlock3").removeClass("hidden");
-          $("#agentBlock3 .agent-chat").prepend(typingEffect());
-          setTimeout(scrollToBottom, 0);
-
-          setTimeout(function () {
-            $(".temp-typing").remove();
-            $("#msg10").removeClass("hidden").after(typingEffect());
-            setTimeout(scrollToBottom, 0);
-
-            setTimeout(function () {
-              $(".temp-typing").remove();
-              $("#msg11").removeClass("hidden");
-              setTimeout(scrollToBottom, 0);
-            }, 750);
-          }, 1500);
-        }, 1500);
-      }
-
       // Step for insurance question
       if (currentStep == 3) {
         $("#msg11").addClass("hidden");
@@ -600,7 +522,7 @@ $(document).ready(function () {
         } else if (buttonValue == "Yes") {
           $("#msg12yes").removeClass("hidden");
           formData.is_insured = "OTHER"; // Set default insurance value to "OTHER"
-          updateURLParameters(); // Update URL parameters
+          // updateURLParameters(); // Update URL parameters
           setTimeout(scrollToBottom, 0);
 
           // Show country selection if "Yes"
@@ -819,4 +741,10 @@ document
         scrollToBottom(); // Scroll immediately when the message appears
       }, 1500);
     }
+  });
+
+document
+  .querySelector('[data-form-value="Yes"]')
+  .addEventListener("click", function () {
+    history.pushState(null, "", window.location.pathname);
   });
