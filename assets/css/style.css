@@ -1646,7 +1646,7 @@ div#msg14 {
 .chatBody {
   flex-grow: 1;
   margin-bottom: 15px;
-  max-height: 400px;
+  max-height: 500px;
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;

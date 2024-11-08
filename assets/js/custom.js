@@ -7,14 +7,41 @@ window.formData = {
   insurance_company: "",
 };
 
-// Add these functions at the top of your file
+// scroll to Bottom Function
 function scrollToBottom() {
   const chatBody = document.querySelector(".chatBody");
-  if (chatBody) {
-    chatBody.scrollTop = chatBody.scrollHeight;
-  }
+  const chatContainer = document.querySelector(".chat-container");
+
+  // Add extra padding or margin at the bottom
+  chatContainer.style.paddingBottom = "150px"; // Adjust the value as needed
+
+  // Scroll to the bottom
+  chatBody.scrollTop = chatBody.scrollHeight;
 }
 
+// Modify the existing scrollToBottom function or add this alongside it
+function enhancedScrollToBottom() {
+  const chatContainer = document.querySelector(".chat-container");
+
+  // Add extra space for specific blocks
+  const blocksToAddSpace = [
+    "agentBlock1",
+    "agentBlockCitizenship",
+    // Add other block IDs you want to have extra space
+    "agentBlockZipCode",
+    "agentBlockage",
+  ];
+
+  blocksToAddSpace.forEach((blockId) => {
+    const block = document.getElementById(blockId);
+    if (block) {
+      block.style.marginBottom = "50px"; // Adjust the value as needed
+    }
+  });
+
+  // Scroll to bottom
+  scrollToBottom();
+}
 function showTypingIndicator() {
   const typingIndicator = document.createElement("div");
   typingIndicator.id = "typingIndicator";
