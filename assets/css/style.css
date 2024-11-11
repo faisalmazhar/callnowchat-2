@@ -1446,8 +1446,11 @@ button {
   text-align: left;
   width: 117%;
 }
-div#msg14 {
-  width: 175%;
+#msg14,
+#msg15,
+#msg16,
+#msg17 {
+  width: 200%;
 }
 
 @media (min-width: 640px) {
@@ -1953,7 +1956,7 @@ body {
 }
 a#redirectButton {
   width: 100%;
-  max-width: 65%;
+  /* max-width: 65%; */
   margin-left: 0;
 }
 #msg4 {
@@ -2017,7 +2020,10 @@ p {
     width: 100%;
     max-width: 65%;
   }
-  div#msg14 {
+  #msg14,
+  #msg15,
+  #msg16,
+  #msg17 {
     width: 117%;
   }
   a#redirectButton {

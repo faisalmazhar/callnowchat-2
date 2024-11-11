@@ -622,6 +622,7 @@ $(document).ready(function () {
 
         $("#msg13").removeClass("hidden");
         $("#msg14").removeClass("hidden");
+        $("#msg15").removeClass("hidden");
         $("#msg16").removeClass("hidden");
         $("#msg17").removeClass("hidden");
         $("#msg17a").removeClass("hidden");
