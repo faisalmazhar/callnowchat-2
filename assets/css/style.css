@@ -2030,9 +2030,9 @@ p {
     /* max-width: 75%; */
     font-size: 13px;
   }
-  p {
+  /* p {
     font-size: 13px !important;
-  }
+  } */
   .agent-picture {
     height: 30px;
     width: 30px;
@@ -2040,5 +2040,9 @@ p {
   .agent-picture {
     height: 30px;
     width: 30px;
+  }
+  .agent-question {
+    padding: 5px 10px;
+    margin-bottom: 8px;
   }
 }
