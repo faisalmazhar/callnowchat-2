@@ -12,13 +12,17 @@ function scrollToBottom() {
   const chatBody = document.querySelector(".chatBody");
   const chatContainer = document.querySelector(".chat-container");
 
-  // Add extra padding or margin at the bottom
-  chatContainer.style.paddingBottom = "150px"; // Adjust the value as needed
+  // Check if the device is mobile (you can adjust the width threshold as needed)
+  if (window.innerWidth <= 768) {
+    // Assuming mobile devices have a width of 768px or less
+    chatContainer.style.paddingBottom = "85px"; // Set padding for mobile devices
+  } else {
+    chatContainer.style.paddingBottom = "150px"; // Set padding for larger screens
+  }
 
   // Scroll to the bottom
   chatBody.scrollTop = chatBody.scrollHeight;
 }
-
 // Modify the existing scrollToBottom function or add this alongside it
 function enhancedScrollToBottom() {
   const chatContainer = document.querySelector(".chat-container");

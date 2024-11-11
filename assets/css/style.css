@@ -2031,6 +2031,14 @@ p {
     font-size: 13px;
   }
   p {
-    font-size: 13px;
+    font-size: 13px !important;
+  }
+  .agent-picture {
+    height: 30px;
+    width: 30px;
+  }
+  .agent-picture {
+    height: 30px;
+    width: 30px;
   }
 }
