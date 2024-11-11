@@ -2027,7 +2027,7 @@ p {
     width: 117%;
   }
   a#redirectButton {
-    max-width: 75%;
+    /* max-width: 75%; */
     font-size: 13px;
   }
   p {
